@@ -22,54 +22,27 @@ class Node
     }
 }
  
-class Edge
-{
-    int name;    // edge ID, started from 0 to n-1
-    int start;   // start vertex of this edge
-    int end;     // end vertex of this edge
-    int direct;  // forwards (+1) or backwards (-1) on augmenting path
-                  // if 0 then not part of augmenting path
-    int capacity; // capacity
-    int flow;    // current flow
- 
-    public Edge(int id)
-    {
-        name = id;
-        start = -1;
-        end = -1;
-        direct = 0; // default is neither
-        capacity = 0;
-        flow = 0;
-    }
- 
-    public String toString()
-    {
-        return name + ": s=" + start + " e=" + end + " d=" + direct;
-    }
-}
- 
 public class PathDAG
 {
-    int    n;                      // number of nodes
-    int    dest;                 // destination node
-    int    minLength;              // the minimal length of each path
-    Node[] v;                      // used to store Nodes
-    Edge[] e;                      // used to store Edges
-    int[]  path;                   // used to store temporary path
-    int    length       = 0;       // length of the path
-    int    distance     = 0;       // distance of the path
-    int[]  bestPath;               // used to store temporary path
-    int    bestLength   = 0;       // length of the longest path
-    int    bestDistance = -1000000; // distance of the longest path
-    int[]  visited;                // used to mark a node as visited if set as
-                                    // 1
+    int    n;                      
+    int    dest;                 
+    int    minLength;              
+    Node[] v;                      
+    Edge[] e;                      
+    int[]  path;                   
+    int    length       = 0;       
+    int    distance     = 0;       
+    int[]  optimPath;               
+    int    optimLgth   = 0;       
+    int    optimDstc = -1000000; 
+    int[]  visited;                
  
-    public LongestPathinDAG()
+    public PathDAG()
     {
         Scanner sc = new Scanner(System.in);
-        System.out.println("Enter the number of vertices: ");
+        System.out.println("How many of vertices: ");
         n = sc.nextInt();
-        System.out.println("Enter the number of edges: ");
+        System.out.println("How many of edges: ");
         int m = sc.nextInt();
         v = new Node[n];
         e = new Edge[m];
@@ -97,24 +70,17 @@ public class PathDAG
         }
         visited = new int[v.length];
         path = new int[v.length];
-        bestPath = new int[v.length];
+        optimPath = new int[v.length];
         sc.close();
     }
  
-    /*
-     * this function looks for a longest path starting from being to end,
-     * using the backtrack depth-first search.
-     */
     public boolean findLongestPath(int begin, int end, int minLen)
     {
-        /*
-         * compute a longest path from begin to end
-         */
         dest = end;
-        bestDistance = -100000000;
+        optimDstc = -100000000;
         minLength = minLen;
         dfsLongestPath(begin);
-        if (bestDistance == -100000000)
+        if (optimDstc == -100000000)
             return false;
         else
             return true;
@@ -126,12 +92,12 @@ public class PathDAG
         path[length++] = current;
         if (current == dest && length >= minLength)
         {
-            if (distance > bestDistance)
+            if (distance > optimDstc)
             {
                 for (int i = 0; i < length; i++)
-                    bestPath[i] = path[i];
-                bestLength = length;
-                bestDistance = distance;
+                    optimPath[i] = path[i];
+                optimLgth = length;
+                optimDstc = distance;
             }
         }
         else
@@ -153,34 +119,62 @@ public class PathDAG
         length--;
     }
  
-    public String toString()
-    {
-        String output = "v" + bestPath[0];
-        for (int i = 1; i < bestLength; i++)
-            output = output + " -> v" + bestPath[i];
-        return output;
-    }
- 
+
     public static void main(String arg[])
     {
-        LongestPathinDAG lp = new LongestPathinDAG();
+        PathDAG lp = new PathDAG();
         
         if (lp.findLongestPath(0, lp.n - 1, 1))
-            System.out.println("Longest Path is " + lp
-                    + " and the distance is " + lp.bestDistance);
+            System.out.println("The Path is " + lp
+                    + " The distance is " + lp.optimDstc);
         else
             System.out.println("No path from v0 to v" + (lp.n - 1));
         
         if (lp.findLongestPath(3, 5, 1))
-            System.out.println("Longest Path is " + lp
-                    + " and the distance is " + lp.bestDistance);
+            System.out.println("The Path is " + lp
+                    + " The distance is " + lp.optimDstc);
         else
             System.out.println("No path from v3 to v5");
         
         if (lp.findLongestPath(lp.n - 1, 3, 1))
-            System.out.println("Longest Path is " + lp
-                    + " and the distance is " + lp.bestDistance);
+            System.out.println("The Path is " + lp
+                    + " The distance is " + lp.optimDstc);
         else
             System.out.println("No path from v5 to v3");
+    }
+	
+	public String toString()
+    {
+        String output = "v" + optimPath[0];
+        for (int i = 1; i < optimLgth; i++)
+            output = output + " -> v" + optimPath[i];
+        return output;
+    }
+ 
+}
+
+class Edge
+{
+    int name;    
+    int start;   
+    int end;     
+    int direct;  
+                 
+    int capacity; 
+    int flow;    
+ 
+    public Edge(int id)
+    {
+        name = id;
+        start = -1;
+        end = -1;
+        direct = 0; 
+        capacity = 0;
+        flow = 0;
+    }
+ 
+    public String toString()
+    {
+        return name + ": s=" + start + " e=" + end + " d=" + direct;
     }
 }
